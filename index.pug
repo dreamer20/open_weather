@@ -1,0 +1,83 @@
+doctype html
+head(lang='ru')
+  meta(charset='utf-8')
+  link(href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/flatly/bootstrap.min.css", rel="stylesheet", integrity="sha384-+ENW/yibaokMnme+vBLnHMphUYxHs34h9lpdbSLuAwGkOKFRl4C34WkjazBtb7eT", crossorigin="anonymous")
+  link(href="css/style.css", rel="stylesheet")
+body
+  .navbar.navbar-default.navbar-static-top
+    .container-fluid
+      .navbar-header
+        a.navbar-brand(href='#') MyWeather
+  .container
+    .row
+      .col-md-4.col-md-offset-4
+        .input-group
+          input#inputSearch.form-control(type='text', placeholder='Введите название города')
+          span.input-group-btn
+            button#btnSearch.btn.btn-default(type='button') Найти
+    .row.mg-top-21.results
+      .col-md-4
+        .panel.panel-default
+          .panel-heading
+            h4
+              strong Погода в городе London, US
+          .panel-body
+            p.temp 15 C, туман
+            p.date 10.10.
+          table.table.table-bordered
+            tbody
+              tr
+                th Ветер
+                td td 1
+              tr
+                th Облачность
+                td Облачность
+              tr
+                th Давление
+                td td 2
+              tr
+                th Влажность
+                td td 2
+              tr
+                th Восход
+                td td 2
+              tr
+                th Закат
+                td td 2
+              tr
+                th Координаты
+                td td 2
+      .col-md-8
+        ul.nav.nav-tabs(role='tablist')
+          li.active(role='presentation')
+            a(href='#main'
+              aria-controls="main"
+              role='tab'
+              data-toggle='tab') Main
+          li(role='presentation')
+            a(href='#second'
+              aria-controls="second"
+              role='tab'
+              data-toggle='tab') Second
+          li(role='presentation')
+            a(href='#third'
+              aria-controls="third"
+              role='tab'
+              data-toggle='tab') Third
+        .tab-content
+          #main.tab-pane.fade.active(role='tabpanel') lorem ipsum dolor sit amet
+          #second.tab-pane.fade(role='tabpanel') lorem ipsum dolor sit amet
+          #third.tab-pane.fade(role='tabpanel') lorem ipsum dolor sit amet
+    .row#template
+      .col-md-1.col-xs-3.col-md-offset-1
+          img.countryFlag.thumbnail.center-block.mg-top-21.img-responsive(src='')
+      .col-md-8.col-xs-9
+        h3
+          a.cityNameLink(href='#')
+          span.cityTemp.badge 
+        p.description
+        p: a.cityCoordLink(href='#', target='_blank')
+  script(src='js/jquery-3.2.1.min.js')
+  script(src='js/chart.min.js')
+  script(src='node_modules/bootstrap/dist/js/bootstrap.min.js')
+  script(src='js/script.js')

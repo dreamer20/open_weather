@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<head lang="ru">
+  <meta charset="utf-8">
+  <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/flatly/bootstrap.min.css" rel="stylesheet" integrity="sha384-+ENW/yibaokMnme+vBLnHMphUYxHs34h9lpdbSLuAwGkOKFRl4C34WkjazBtb7eT" crossorigin="anonymous">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div class="navbar navbar-default navbar-static-top">
+    <div class="container-fluid">
+      <div class="navbar-header"><a class="navbar-brand" href="#">MyWeather</a></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 col-md-offset-4">
+        <div class="input-group">
+          <input class="form-control" id="inputSearch" type="text" placeholder="Введите название города"><span class="input-group-btn">
+            <button class="btn btn-default" id="btnSearch" type="button">Найти</button></span>
+        </div>
+      </div>
+    </div>
+    <div class="row mg-top-21 results">
+      <div class="col-md-4">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4><strong>Погода в городе London, US</strong></h4>
+          </div>
+          <div class="panel-body">
+            <p class="temp">15 C, туман</p>
+            <p class="date">10.10.</p>
+          </div>
+          <table class="table table-bordered">
+            <tbody>
+              <tr>
+                <th>Ветер</th>
+                <td>td 1</td>
+              </tr>
+              <tr>
+                <th>Облачность</th>
+                <td>Облачность</td>
+              </tr>
+              <tr>
+                <th>Давление</th>
+                <td>td 2</td>
+              </tr>
+              <tr>
+                <th>Влажность</th>
+                <td>td 2</td>
+              </tr>
+              <tr>
+                <th>Восход</th>
+                <td>td 2</td>
+              </tr>
+              <tr>
+                <th>Закат</th>
+                <td>td 2</td>
+              </tr>
+              <tr>
+                <th>Координаты</th>
+                <td>td 2</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="active" role="presentation"><a href="#main" aria-controls="main" role="tab" data-toggle="tab">Main</a></li>
+          <li role="presentation"><a href="#second" aria-controls="second" role="tab" data-toggle="tab">Second</a></li>
+          <li role="presentation"><a href="#third" aria-controls="third" role="tab" data-toggle="tab">Third</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade active" id="main" role="tabpanel">lorem ipsum dolor sit amet</div>
+          <div class="tab-pane fade" id="second" role="tabpanel">lorem ipsum dolor sit amet</div>
+          <div class="tab-pane fade" id="third" role="tabpanel">lorem ipsum dolor sit amet</div>
+        </div>
+      </div>
+    </div>
+    <div class="row" id="template">
+      <div class="col-md-1 col-xs-3 col-md-offset-1"><img class="countryFlag thumbnail center-block mg-top-21 img-responsive" src=""></div>
+      <div class="col-md-8 col-xs-9">
+        <h3><a class="cityNameLink" href="#"></a><span class="cityTemp badge"> </span></h3>
+        <p class="description"></p>
+        <p><a class="cityCoordLink" href="#" target="_blank"></a></p>
+      </div>
+    </div>
+  </div>
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="js/script.js"></script>
+</body>
