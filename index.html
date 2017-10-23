@@ -64,13 +64,15 @@
         </div>
       </div>
       <div class="col-md-8">
-        <ul class="nav nav-tabs" role="tablist">
+        <ul class="nav nav-tabs" id="nav-tabs" role="tablist">
           <li class="active" role="presentation"><a href="#main" aria-controls="main" role="tab" data-toggle="tab">Main</a></li>
           <li role="presentation"><a href="#second" aria-controls="second" role="tab" data-toggle="tab">Second</a></li>
           <li role="presentation"><a href="#third" aria-controls="third" role="tab" data-toggle="tab">Third</a></li>
         </ul>
         <div class="tab-content">
-          <div class="tab-pane fade active" id="main" role="tabpanel">lorem ipsum dolor sit amet</div>
+          <div class="tab-pane fade in active" id="main" role="tabpanel">
+            <canvas id="chart" width="400" height="200"> </canvas>
+          </div>
           <div class="tab-pane fade" id="second" role="tabpanel">lorem ipsum dolor sit amet</div>
           <div class="tab-pane fade" id="third" role="tabpanel">lorem ipsum dolor sit amet</div>
         </div>
@@ -86,6 +88,7 @@
     </div>
   </div>
   <script src="js/jquery-3.2.1.min.js"></script>
+  <script src="js/chart.min.js"></script>
   <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
   <script src="js/script.js"></script>
 </body>

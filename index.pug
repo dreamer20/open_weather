@@ -48,7 +48,7 @@ body
                 th Координаты
                 td td 2
       .col-md-8
-        ul.nav.nav-tabs(role='tablist')
+        ul#nav-tabs.nav.nav-tabs(role='tablist')
           li.active(role='presentation')
             a(href='#main'
               aria-controls="main"
@@ -65,7 +65,8 @@ body
               role='tab'
               data-toggle='tab') Third
         .tab-content
-          #main.tab-pane.fade.active(role='tabpanel') lorem ipsum dolor sit amet
+          #main.tab-pane.fade.in.active(role='tabpanel')
+            canvas#chart(width= 400, height= 200) 
           #second.tab-pane.fade(role='tabpanel') lorem ipsum dolor sit amet
           #third.tab-pane.fade(role='tabpanel') lorem ipsum dolor sit amet
     .row#template
