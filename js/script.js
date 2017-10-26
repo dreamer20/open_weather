@@ -1,10 +1,14 @@
 'use strict';
 (function() {
   $('#btnSearch').on('click', findCities);
+  $('#inputSearch').on('keydown', function(event) {
+    if (event.keyCode == 13) {
+      findCities();
+    } 
+  });
 
-  var loader = $('<div></div>')
-                .addClass('loader-wrapper main-loader')
-                .append("<div class='loader'></div>");
+  var resultsLoader = new Loader('.results');
+
 
   function findCities() {
     var searchString = $('#inputSearch').val();
@@ -12,7 +16,7 @@
               + encodeURIComponent(searchString) 
               + '&units=metric&lang=ru&APPID=8341812113eb234cc63caae1a067b88c';
 
-    $('.results').html('').append(loader);
+    resultsLoader.start();
 
     $.get( url, function(data) {
       createCityList(data.list); 
@@ -21,7 +25,7 @@
       showAlertMessage('Похоже произошла какая-то ошибка. Попробуйте повторить поиск.')
     })
     .always(function() {
-      $('.main-loader').remove();
+      resultsLoader.stop();
     });
   }
 
@@ -95,6 +99,7 @@
                 .addClass('col-md-8 forecast');
                 
     $('.results').html('').append([col1, col2]);
+
     getCityWeather(event);
     getCityForecast(event);
   }
@@ -103,17 +108,18 @@
     var url = 'http://api.openweathermap.org/data/2.5/forecast?id='
               + event.data.id + '&units=metric&lang=ru&APPID=8341812113eb234cc63caae1a067b88c';
 
-    $('.forecast').html('').append(loader.clone().addClass('forecast-loader'));
-
+    var forecastLoader = new Loader('.forecast');
+    forecastLoader.start();
     $.get(url, function(data) {
       createTabs();
-      createCityForecastChart(data);
+      create24hForecastChart(data);
+      createdailyForecastChart(data);
     })
     .fail(function() {
       alert('fail');
     })
     .always(function() {
-      $('.forecast-loader').remove();
+     forecastLoader.stop()
     });
   }
 
@@ -162,7 +168,7 @@
 
   }
 
-  function createCityForecastChart(cityData) {
+  function create24hForecastChart(cityData) {
     var temperatureData = [];
     var temperatureHours = [];
     var date = [];
@@ -175,12 +181,12 @@
 
     $('<canvas></canvas>')
       .attr({
-        'id': 'chart',
+        'id': '24hChart',
         'width': 400,
         'height': 150,
       }).appendTo('.tab-content #24hours');
       
-    var ctx = $('#chart');
+    var ctx = $('#24hChart');
 
     var myChart = new Chart(ctx, {
       type: 'line',
@@ -189,7 +195,7 @@
         datasets: [{
           label: 'Температура',
           data: temperatureData,
-          backgroundColor: 'rgb(255, 99, 132, 0)',
+          fill: false,
         }]
       },
       options: {
@@ -230,11 +236,115 @@
 
   }
 
+  function createdailyForecastChart(cityData) {
+    
+    var temp = [];
+    var temperatureData = {
+      max: [],
+      min: [],
+    };
+    
+    var date = [];
+    var dt = formatUTCTime(cityData.list[0].dt);
+    var currentDate = dt.date;
+    date.push(dt.date);
+    for (var i = 0; i < cityData.list.length; i++) {
+      var dt = formatUTCTime(cityData.list[i].dt);
+      temp.push(cityData.list[i].main.temp);
+      if (currentDate != dt.date) {
+        currentDate = dt.date;
+        date.push(dt.date)
+
+        var maxTemp = Math.max.apply(null, temp);
+        var minTemp = Math.min.apply(null, temp);
+        temperatureData.max.push(formatTemperature(maxTemp));
+        temperatureData.min.push(formatTemperature(minTemp));
+        temp = [];
+      }
+
+      if (i == cityData.list.length-1) {
+        var maxTemp = Math.max.apply(null, temp);
+        var minTemp = Math.min.apply(null, temp);
+        temperatureData.max.push(formatTemperature(maxTemp));
+        temperatureData.min.push(formatTemperature(minTemp));
+        temp = [];     
+      }
+    }
+
+    $('<canvas></canvas>')
+      .attr({
+        'id': '5dChart',
+        'width': 400,
+        'height': 150,
+      }).appendTo('.tab-content #5days');
+      
+    var ctx = $('#5dChart');
+
+    var myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: date,
+        datasets: [{
+          label: 'Максимальная температура (День)',
+          data: temperatureData.max,
+          fill: 1,
+          backgroundColor: 'rgb(81, 113, 145, 0.5)',
+          borderColor: 'rgb(81, 113, 145, 0.5)',
+        },{
+          label: 'Минимальная температура (Ночь)',
+          data: temperatureData.min,
+          fill: false,
+        }]
+      },
+      options: {
+        tooltips: {
+
+          callbacks: {
+            title: function(tooltipsItems, data) {
+              return date[tooltipsItems[0].index];
+            },
+            label: function(tooltipsItem, data) {
+              return data.datasets[tooltipsItem.datasetIndex].label + ': ' 
+                      + data.datasets[tooltipsItem.datasetIndex].data[tooltipsItem.index] + '°C';
+            }
+          }
+        },
+        scales: {
+          xAxes: [{
+            display: true,
+            scaleLabel: {
+              display: true,
+              labelString: 'Время'
+            },
+          }],        
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Темература °C'
+            },
+            ticks: {
+              beginAtZero: true,
+              suggestedMin: -10,
+              suggentedMax: 20,   
+            },
+          }],
+        }
+      }
+    });
+
+  
+  }
+
+  function getAverageDaytimeTemp(arrayOfTemp) {
+    
+  }
+
   function getCityWeather(event) {
     var url = 'http://api.openweathermap.org/data/2.5/weather?id='
               + event.data.id + '&units=metric&lang=ru&APPID=8341812113eb234cc63caae1a067b88c';
     
-    $('.weather').html('').append(loader.clone().addClass('weather-loader'));   
+    var weatherLoader = new Loader('.weather');
+    weatherLoader.start(); 
 
     $.get(url, function(data) {
       createCityWeatherPanel(data);
@@ -243,7 +353,7 @@
       alert('fail');
     })
     .always(function() {
-      $('.weather-loader').remove();
+      weatherLoader.stop();
     });
   }
 
@@ -304,7 +414,8 @@
     var minutes = date.getMinutes().toString();
     var month = (date.getMonth() + 1).toString();
     var dayOfMonth = date.getDate().toString();
-    var year = date.getYear().toString();
+    var year = date.getFullYear().toString();
+    
     if (hours.length == 1) {
       hours = '0' + hours
     }
@@ -347,25 +458,37 @@
 
 var ctx = $('#chart');
 
+    
     var myChart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: [1,2,3,4,6,7],
         datasets: [{
-          label: 'Температура',
-          data: [2,53,31,33,55],
-          backgroundColor: 'rgb(255, 99, 132, 0)',
-        }]
+          label: 'max',
+          data: [30,53,31,33,55],
+          borderColor: 'rgb(81, 113, 145, 0.5)',
+          backgroundColor: 'rgb(44, 62, 80, 0.5)',
+          fill: 1, 
+        },
+        {
+          label: 'min',
+          data: [20, 15, 28, 30, 25],
+          // borderColor: 'rgb(135, 195, 255)',
+          // backgroundColor: 'rgb(135, 195, 255)',
+          fill: false,
+        }
+        ]
       },
       options: {
         tooltips: {
 
           callbacks: {
             title: function(tooltipsItems, data) {
-              console.log(data);
+              // console.log(data);
             },
             label: function(tooltipsItem, data) {
-              return data.datasets[0].label + ': ' + data.datasets[0].data[tooltipsItem.index] + '°C';
+              console.log(tooltipsItem, data)
+              return data.datasets[tooltipsItem.datasetIndex].label + ': ' + data.datasets[tooltipsItem.datasetIndex].data[tooltipsItem.index] + '°C';
             }
           }
         },
