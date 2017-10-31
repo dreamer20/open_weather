@@ -5,8 +5,7 @@
   display: none; }
 
 .temp {
-  font-size: 20px;
-  line-height: 1; }
+  font-size: 20px; }
 
 .loaderWrapper {
   padding: 50px 0; }
@@ -35,6 +34,12 @@
 
 .loader:after {
   border: 10px solid #dce4ec; }
+
+.hourly-time {
+  line-height: 50px !important; }
+
+tr.no-hover:hover {
+  background-color: transparent !important; }
 
 @keyframes spin {
   0% {

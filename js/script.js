@@ -114,6 +114,7 @@
       createTabs();
       create24hForecastChart(data);
       createdailyForecastChart(data);
+      createHourlyForecastTable(data);
     })
     .fail(function() {
       alert('fail');
@@ -165,7 +166,6 @@
 
 
     $('.forecast').append([ul, tabContent]);
-
   }
 
   function create24hForecastChart(cityData) {
@@ -233,7 +233,6 @@
         }
       }
     });
-
   }
 
   function createdailyForecastChart(cityData) {
@@ -249,7 +248,7 @@
     var currentDate = dt.date;
     date.push(dt.date);
     for (var i = 0; i < cityData.list.length; i++) {
-      var dt = formatUTCTime(cityData.list[i].dt);
+      dt = formatUTCTime(cityData.list[i].dt);
       temp.push(cityData.list[i].main.temp);
       if (currentDate != dt.date) {
         currentDate = dt.date;
@@ -257,19 +256,25 @@
 
         var maxTemp = Math.max.apply(null, temp);
         var minTemp = Math.min.apply(null, temp);
+        
         temperatureData.max.push(formatTemperature(maxTemp));
         temperatureData.min.push(formatTemperature(minTemp));
+        
         temp = [];
       }
 
-      if (i == cityData.list.length-1) {
+      if (i == cityData.list.length-1 && dt.time != '00:00') {
         var maxTemp = Math.max.apply(null, temp);
         var minTemp = Math.min.apply(null, temp);
+        console.log(maxTemp, minTemp);
         temperatureData.max.push(formatTemperature(maxTemp));
         temperatureData.min.push(formatTemperature(minTemp));
+        Window.temp = temp;
+        console.log(temp);
         temp = [];     
       }
     }
+    
 
     $('<canvas></canvas>')
       .attr({
@@ -331,12 +336,62 @@
         }
       }
     });
-
-  
   }
 
-  function getAverageDaytimeTemp(arrayOfTemp) {
-    
+  function createHourlyForecastTable(cityData) {
+
+    var table = $('<table></table>')
+                  .addClass('table table-hover hourly');
+    var tbody = $('<tbody></tbody>');
+
+    var dt = formatUTCTime(cityData.list[0].dt);
+    var currentDate = dt.date;
+    var dataHeaderRow = createTableDataHeaderRow(currentDate);
+    tbody.append(dataHeaderRow);
+    for (var i = 1; i < cityData.list.length; i++) {
+      dt = formatUTCTime(cityData.list[i].dt);
+      
+      if (currentDate != dt.date) {
+        currentDate = dt.date;
+        dataHeaderRow = createTableDataHeaderRow(currentDate);
+        tbody.append(dataHeaderRow);
+      }
+
+      var dataRow = createTableDataRow(dt.time, cityData.list[i])
+
+      tbody.append(dataRow);
+    }
+
+    table.append(tbody);
+
+    $('#hourly').append(table);
+
+    function createTableDataHeaderRow(date) {
+      var h4 = $('<h4></h4>').text(date);
+      var th = $('<th></th>').append(h4);
+      var tr = $('<tr></tr>')
+                .addClass('no-hover')
+                .append(th);
+
+      return tr;
+    }
+
+    function createTableDataRow(time, hour) {
+    var th = $('<th></th>')
+                .addClass('hourly-time')
+                .text(time);
+    var div1 = $('<div></div>')
+                .append('<div class="badge">' + hour.main.temp +'°C </div> ')
+                .append(hour.weather[0].description);
+    var div2 = $('<div></div>')
+                .text(hour.wind.speed + 'м/с, облачность: ' + hour.clouds.all + '%, ' 
+                  + 'влажность: ' + hour.main.humidity + '%');
+    var td = $('<td></td>')
+              .append([div1, div2]);
+    var tr = $('<tr></tr>').append([th, td]);
+
+    return tr;
+    }
   }
 
   function getCityWeather(event) {
@@ -383,7 +438,6 @@
                   .append([panelHeading, panelBody, weatherTable]);
 
     $('.weather').append(panel);
-
   }
 
   function createWeatherTable(cityData) {
@@ -448,7 +502,7 @@
     }
 
     return time;
-    }
+  }
   
 
   function formatTemperature(temp) {

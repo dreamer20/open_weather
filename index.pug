@@ -68,7 +68,38 @@ body
           #main.tab-pane.fade.in.active(role='tabpanel')
             canvas#chart(width= 400, height= 200) 
           #second.tab-pane.fade(role='tabpanel') lorem ipsum dolor sit amet
-          #third.tab-pane.fade(role='tabpanel') lorem ipsum dolor sit amet
+          #third.tab-pane.fade(role='tabpanel')
+            table.table.table-hover.hourly
+              tbody
+                tr.no-hover
+                  th: h4 20.10.2017
+                tr
+                  th.hourly-time 06:00
+                  td
+                    .t
+                      .badge 5C
+                      | пасмурно
+                    .descr Влажность
+                tr
+                  th 09:00
+                  td 5C облачно 
+                tr
+                  th 12:00
+                  td 5C облачно 
+                tr
+                  th 15:00
+                  td 5C облачно
+                tr
+                  th(colspan='2'): h4 20.10.2017
+                tr
+                  th 09:00
+                  td 5C облачно 
+                tr
+                  th 12:00
+                  td 5C облачно 
+                tr
+                  th 15:00
+                  td 5C облачно
     .row#template
       .col-md-1.col-xs-3.col-md-offset-1
           img.countryFlag.thumbnail.center-block.mg-top-21.img-responsive(src='')
