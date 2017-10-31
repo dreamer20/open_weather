@@ -9,7 +9,6 @@
 
   var resultsLoader = new Loader('.results');
 
-
   function findCities() {
     var searchString = $('#inputSearch').val();
     var url = 'http://api.openweathermap.org/data/2.5/find?q=' 
@@ -46,7 +45,7 @@
     $("<div></div>")
     .addClass('col-md-6 col-md-offset-3')
     .append(alert)
-    .appendTo('.results');
+    .prependTo('.results');
   }
 
   function createCityList(data) {
@@ -79,7 +78,12 @@
                             + 'м/с, облачность ' + city.clouds.all + '%, '
                             + city.weather[0].description + '.');
       var cityCoordLink = $("<a></a>")
-                            .attr({href: '#'})
+                            .attr({
+                              href: 'http://www.openstreetmap.org/#map=10/'
+                                    + city.coord.lat + '/' 
+                                    + city.coord.lon,
+                              target: '_blank',
+                            })
                             .text(city.coord.lat + ' : ' + city.coord.lon)
                             .wrap('<p></p>');
       var col2 = $("<div></div>")
@@ -110,18 +114,24 @@
 
     var forecastLoader = new Loader('.forecast');
     forecastLoader.start();
-    $.get(url, function(data) {
-      createTabs();
-      create24hForecastChart(data);
-      createdailyForecastChart(data);
-      createHourlyForecastTable(data);
-    })
+    $.get(url, buildCityForecast)
     .fail(function() {
-      alert('fail');
+      showAlertMessage('Запрос не удался.');
     })
     .always(function() {
      forecastLoader.stop()
     });
+  }
+
+  function buildCityForecast(data) {
+    var tabs = createTabs();
+    var _24hForecastChart = create24hForecastChart(data);
+    var dailyForecastChart = createdailyForecastChart(data);
+    var hourlyForecastTable = createHourlyForecastTable(data);
+    $('.forecast').append(tabs);
+    $('#24hours').append(_24hForecastChart);
+    $('#5days').append(dailyForecastChart);
+    $('#hourly').append(hourlyForecastTable);
   }
 
   function createTabs() {
@@ -164,8 +174,7 @@
                 }).appendTo(tabContent);
     }
 
-
-    $('.forecast').append([ul, tabContent]);
+    return [ul, tabContent];
   }
 
   function create24hForecastChart(cityData) {
@@ -179,16 +188,14 @@
       temperatureHours.push(dt.time);
     }
 
-    $('<canvas></canvas>')
-      .attr({
-        'id': '24hChart',
-        'width': 400,
-        'height': 150,
-      }).appendTo('.tab-content #24hours');
+    var canvas = $('<canvas></canvas>')
+                .attr({
+                  'id': '24hChart',
+                  'width': 400,
+                  'height': 150,
+                });
       
-    var ctx = $('#24hChart');
-
-    var myChart = new Chart(ctx, {
+    var myChart = new Chart(canvas, {
       type: 'line',
       data: {
         labels: temperatureHours,
@@ -200,7 +207,6 @@
       },
       options: {
         tooltips: {
-
           callbacks: {
             title: function(tooltipsItems, data) {
               return date[tooltipsItems[0].index];
@@ -233,6 +239,8 @@
         }
       }
     });
+
+  return canvas;
   }
 
   function createdailyForecastChart(cityData) {
@@ -242,6 +250,12 @@
       max: [],
       min: [],
     };
+    var canvas = $('<canvas></canvas>')
+            .attr({
+              'id': '5dChart',
+              'width': 400,
+              'height': 150,
+            });
     
     var date = [];
     var dt = formatUTCTime(cityData.list[0].dt);
@@ -274,18 +288,8 @@
         temp = [];     
       }
     }
-    
 
-    $('<canvas></canvas>')
-      .attr({
-        'id': '5dChart',
-        'width': 400,
-        'height': 150,
-      }).appendTo('.tab-content #5days');
-      
-    var ctx = $('#5dChart');
-
-    var myChart = new Chart(ctx, {
+    var myChart = new Chart(canvas, {
       type: 'line',
       data: {
         labels: date,
@@ -303,7 +307,6 @@
       },
       options: {
         tooltips: {
-
           callbacks: {
             title: function(tooltipsItems, data) {
               return date[tooltipsItems[0].index];
@@ -336,6 +339,8 @@
         }
       }
     });
+
+  return canvas;
   }
 
   function createHourlyForecastTable(cityData) {
@@ -347,7 +352,9 @@
     var dt = formatUTCTime(cityData.list[0].dt);
     var currentDate = dt.date;
     var dataHeaderRow = createTableDataHeaderRow(currentDate);
+    var dataRow = createTableDataRow(dt.time, cityData.list[0]);
     tbody.append(dataHeaderRow);
+    tbody.append(dataRow);
     for (var i = 1; i < cityData.list.length; i++) {
       dt = formatUTCTime(cityData.list[i].dt);
       
@@ -357,14 +364,14 @@
         tbody.append(dataHeaderRow);
       }
 
-      var dataRow = createTableDataRow(dt.time, cityData.list[i])
+      dataRow = createTableDataRow(dt.time, cityData.list[i])
 
       tbody.append(dataRow);
     }
 
     table.append(tbody);
 
-    $('#hourly').append(table);
+    return table;
 
     function createTableDataHeaderRow(date) {
       var h4 = $('<h4></h4>').text(date);
@@ -372,7 +379,6 @@
       var tr = $('<tr></tr>')
                 .addClass('no-hover')
                 .append(th);
-
       return tr;
     }
 
@@ -402,10 +408,11 @@
     weatherLoader.start(); 
 
     $.get(url, function(data) {
-      createCityWeatherPanel(data);
+      var weatherPanel = createCityWeatherPanel(data);
+      $('.weather').append(weatherPanel);
     })
     .fail(function() {
-      alert('fail');
+      showAlertMessage('Запрос не удался.');
     })
     .always(function() {
       weatherLoader.stop();
@@ -437,7 +444,7 @@
                   .addClass('panel panel-default')
                   .append([panelHeading, panelBody, weatherTable]);
 
-    $('.weather').append(panel);
+    return panel;
   }
 
   function createWeatherTable(cityData) {
@@ -449,26 +456,35 @@
       'Восход': formatUTCTime(cityData.sys.sunrise).time,
       'Закат': formatUTCTime(cityData.sys.sunset).time,
       'Координаты': cityData.coord.lat + ' : ' + cityData.coord.lon,
-    }
+    };
     var tr = $('<tr></tr>').append('<th></th><td></td>');
     var table = $('<table></table>')
                   .addClass('table table-bordered')
                   .append('<tbody></tbody>');
     for (var key in infoTable) {
-    var clone_tr = tr.clone();
-    clone_tr.find('th').text(key).end().find('td').text(infoTable[key]);      
-    table.find('tbody').append(clone_tr);
+        var clone_tr = tr.clone();
+      if (key == 'Координаты') {
+        var link = $('<a></a>').attr({
+          href: 'http://www.openstreetmap.org/#map=10/'
+                + cityData.coord.lat + '/' + cityData.coord.lon,
+          target: '_blank'
+        }).text(infoTable[key]);
+        clone_tr.find('th').text(key).end().find('td').append(link);      
+      } else {
+        clone_tr.find('th').text(key).end().find('td').text(infoTable[key]);      
+      }
+        table.find('tbody').append(clone_tr);                
     }
     return table;
   }
 
   function formatUTCTime(milliseconds) {
-    var date = new Date(milliseconds*1000);
-    var hours = date.getHours().toString();
-    var minutes = date.getMinutes().toString();
-    var month = (date.getMonth() + 1).toString();
-    var dayOfMonth = date.getDate().toString();
-    var year = date.getFullYear().toString();
+    var date = new Date(milliseconds*1000),
+        hours = date.getHours().toString(),
+        minutes = date.getMinutes().toString(),
+        month = (date.getMonth() + 1).toString(),
+        dayOfMonth = date.getDate().toString(),
+        year = date.getFullYear().toString();
     
     if (hours.length == 1) {
       hours = '0' + hours
@@ -492,79 +508,7 @@
     };
   }
 
-  function formatForecastTime(forecastTime) {
-    var time = {};
-    time.date = forecastTime.split(' ')[0];
-    time.time = forecastTime.split(' ')[1];
-
-    if (time.time[0] == '0') {
-      time.time = time.time.slice(1);
-    }
-
-    return time;
-  }
-  
-
   function formatTemperature(temp) {
     return temp.toString().split('.')[0];
   }
 })();
-
-var ctx = $('#chart');
-
-    
-    var myChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [1,2,3,4,6,7],
-        datasets: [{
-          label: 'max',
-          data: [30,53,31,33,55],
-          borderColor: 'rgb(81, 113, 145, 0.5)',
-          backgroundColor: 'rgb(44, 62, 80, 0.5)',
-          fill: 1, 
-        },
-        {
-          label: 'min',
-          data: [20, 15, 28, 30, 25],
-          // borderColor: 'rgb(135, 195, 255)',
-          // backgroundColor: 'rgb(135, 195, 255)',
-          fill: false,
-        }
-        ]
-      },
-      options: {
-        tooltips: {
-
-          callbacks: {
-            title: function(tooltipsItems, data) {
-              // console.log(data);
-            },
-            label: function(tooltipsItem, data) {
-              console.log(tooltipsItem, data)
-              return data.datasets[tooltipsItem.datasetIndex].label + ': ' + data.datasets[tooltipsItem.datasetIndex].data[tooltipsItem.index] + '°C';
-            }
-          }
-        },
-        scales: {
-          xAxes: [{
-            display: true,
-            scaleLabel: {
-              display: true,
-              labelString: 'Время'
-            },
-          }],        
-          yAxes: [{
-            scaleLabel: {
-              display: true,
-              labelString: 'Темература °C'
-            },
-            ticks: {
-              beginAtZero: true,
-              suggestedMin: -10,
-              suggentedMax: 20,   
-            },
-          }],
-        }
-      }
-    });

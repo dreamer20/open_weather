@@ -16,99 +16,99 @@ body
           span.input-group-btn
             button#btnSearch.btn.btn-default(type='button') Найти
     .row.mg-top-21.results
-      .col-md-4
-        .panel.panel-default
-          .panel-heading
-            h4
-              strong Погода в городе London, US
-          .panel-body
-            p.temp 15 C, туман
-            p.date 10.10.
-          table.table.table-bordered
-            tbody
-              tr
-                th Ветер
-                td td 1
-              tr
-                th Облачность
-                td Облачность
-              tr
-                th Давление
-                td td 2
-              tr
-                th Влажность
-                td td 2
-              tr
-                th Восход
-                td td 2
-              tr
-                th Закат
-                td td 2
-              tr
-                th Координаты
-                td td 2
-      .col-md-8
-        ul#nav-tabs.nav.nav-tabs(role='tablist')
-          li.active(role='presentation')
-            a(href='#main'
-              aria-controls="main"
-              role='tab'
-              data-toggle='tab') Main
-          li(role='presentation')
-            a(href='#second'
-              aria-controls="second"
-              role='tab'
-              data-toggle='tab') Second
-          li(role='presentation')
-            a(href='#third'
-              aria-controls="third"
-              role='tab'
-              data-toggle='tab') Third
-        .tab-content
-          #main.tab-pane.fade.in.active(role='tabpanel')
-            canvas#chart(width= 400, height= 200) 
-          #second.tab-pane.fade(role='tabpanel') lorem ipsum dolor sit amet
-          #third.tab-pane.fade(role='tabpanel')
-            table.table.table-hover.hourly
-              tbody
-                tr.no-hover
-                  th: h4 20.10.2017
-                tr
-                  th.hourly-time 06:00
-                  td
-                    .t
-                      .badge 5C
-                      | пасмурно
-                    .descr Влажность
-                tr
-                  th 09:00
-                  td 5C облачно 
-                tr
-                  th 12:00
-                  td 5C облачно 
-                tr
-                  th 15:00
-                  td 5C облачно
-                tr
-                  th(colspan='2'): h4 20.10.2017
-                tr
-                  th 09:00
-                  td 5C облачно 
-                tr
-                  th 12:00
-                  td 5C облачно 
-                tr
-                  th 15:00
-                  td 5C облачно
-    .row#template
-      .col-md-1.col-xs-3.col-md-offset-1
-          img.countryFlag.thumbnail.center-block.mg-top-21.img-responsive(src='')
-      .col-md-8.col-xs-9
-        h3
-          a.cityNameLink(href='#')
-          span.cityTemp.badge 
-        p.description
-        p: a.cityCoordLink(href='#', target='_blank')
+    //-   .col-md-4
+    //-     .panel.panel-default
+    //-       .panel-heading
+    //-         h4
+    //-           strong Погода в городе London, US
+    //-       .panel-body
+    //-         p.temp 15 C, туман
+    //-         p.date 10.10.
+    //-       table.table.table-bordered
+    //-         tbody
+    //-           tr
+    //-             th Ветер
+    //-             td td 1
+    //-           tr
+    //-             th Облачность
+    //-             td Облачность
+    //-           tr
+    //-             th Давление
+    //-             td td 2
+    //-           tr
+    //-             th Влажность
+    //-             td td 2
+    //-           tr
+    //-             th Восход
+    //-             td td 2
+    //-           tr
+    //-             th Закат
+    //-             td td 2
+    //-           tr
+    //-             th Координаты
+    //-             td td 2
+    //-   .col-md-8
+    //-     ul#nav-tabs.nav.nav-tabs(role='tablist')
+    //-       li.active(role='presentation')
+    //-         a(href='#main'
+    //-           aria-controls="main"
+    //-           role='tab'
+    //-           data-toggle='tab') Main
+    //-       li(role='presentation')
+    //-         a(href='#second'
+    //-           aria-controls="second"
+    //-           role='tab'
+    //-           data-toggle='tab') Second
+    //-       li(role='presentation')
+    //-         a(href='#third'
+    //-           aria-controls="third"
+    //-           role='tab'
+    //-           data-toggle='tab') Third
+    //-     .tab-content
+    //-       #main.tab-pane.fade.in.active(role='tabpanel')
+    //-         canvas#chart(width= 400, height= 200) 
+    //-       #second.tab-pane.fade(role='tabpanel') lorem ipsum dolor sit amet
+    //-       #third.tab-pane.fade(role='tabpanel')
+    //-         table.table.table-hover.hourly
+    //-           tbody
+    //-             tr.no-hover
+    //-               th: h4 20.10.2017
+    //-             tr
+    //-               th.hourly-time 06:00
+    //-               td
+    //-                 .t
+    //-                   .badge 5C
+    //-                   | пасмурно
+    //-                 .descr Влажность
+    //-             tr
+    //-               th 09:00
+    //-               td 5C облачно 
+    //-             tr
+    //-               th 12:00
+    //-               td 5C облачно 
+    //-             tr
+    //-               th 15:00
+    //-               td 5C облачно
+    //-             tr
+    //-               th(colspan='2'): h4 20.10.2017
+    //-             tr
+    //-               th 09:00
+    //-               td 5C облачно 
+    //-             tr
+    //-               th 12:00
+    //-               td 5C облачно 
+    //-             tr
+    //-               th 15:00
+    //-               td 5C облачно
+    //- .row#template
+    //-   .col-md-1.col-xs-3.col-md-offset-1
+    //-       img.countryFlag.thumbnail.center-block.mg-top-21.img-responsive(src='')
+    //-   .col-md-8.col-xs-9
+    //-     h3
+    //-       a.cityNameLink(href='#')
+    //-       span.cityTemp.badge 
+    //-     p.description
+    //-     p: a.cityCoordLink(href='#', target='_blank') 
   script(src='js/jquery-3.2.1.min.js')
   script(src='js/chart.min.js')
   script(src='node_modules/bootstrap/dist/js/bootstrap.min.js')
