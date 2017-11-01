@@ -11,7 +11,7 @@
 
   function findCities() {
     var searchString = $('#inputSearch').val();
-    var url = 'http://api.openweathermap.org/data/2.5/find?q=' 
+    var url = 'https://api.openweathermap.org/data/2.5/find?q=' 
               + encodeURIComponent(searchString) 
               + '&units=metric&lang=ru&APPID=8341812113eb234cc63caae1a067b88c';
 
@@ -79,7 +79,7 @@
                             + city.weather[0].description + '.');
       var cityCoordLink = $("<a></a>")
                             .attr({
-                              href: 'http://www.openstreetmap.org/#map=10/'
+                              href: 'https://www.openstreetmap.org/#map=10/'
                                     + city.coord.lat + '/' 
                                     + city.coord.lon,
                               target: '_blank',
@@ -109,7 +109,7 @@
   }
 
   function getCityForecast(event) {
-    var url = 'http://api.openweathermap.org/data/2.5/forecast?id='
+    var url = 'https://api.openweathermap.org/data/2.5/forecast?id='
               + event.data.id + '&units=metric&lang=ru&APPID=8341812113eb234cc63caae1a067b88c';
 
     var forecastLoader = new Loader('.forecast');
@@ -401,7 +401,7 @@
   }
 
   function getCityWeather(event) {
-    var url = 'http://api.openweathermap.org/data/2.5/weather?id='
+    var url = 'https://api.openweathermap.org/data/2.5/weather?id='
               + event.data.id + '&units=metric&lang=ru&APPID=8341812113eb234cc63caae1a067b88c';
     
     var weatherLoader = new Loader('.weather');
@@ -465,7 +465,7 @@
         var clone_tr = tr.clone();
       if (key == 'Координаты') {
         var link = $('<a></a>').attr({
-          href: 'http://www.openstreetmap.org/#map=10/'
+          href: 'https://www.openstreetmap.org/#map=10/'
                 + cityData.coord.lat + '/' + cityData.coord.lon,
           target: '_blank'
         }).text(infoTable[key]);
