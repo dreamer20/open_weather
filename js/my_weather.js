@@ -31,8 +31,8 @@
   function showAlertMessage(text) {
     var dismissBtn = $("<button></button>")
                       .addClass('close')
-                      .attr({
-                        type: 'button',
+                      .attr(
+{                        type: 'button',
                         'data-dismiss': 'alert',
                         'aria-label': 'Close',
                       })
@@ -54,7 +54,7 @@
     data.forEach(function(city) {
       var imgFlagLink = "https://github.com/hjnilsson/country-flags/blob/master/png100px/"
                         + city.sys.country.toLowerCase() + ".png?raw=true";
-      var img = $("<img>")
+      var img = $("<img/>")
                   .addClass('countryFlag thumbnail center-block mg-top-21 img-responsive')
                   .attr({src: imgFlagLink});
       var col1 = $("<div></div>")
@@ -68,7 +68,7 @@
                           .on('click', {id: city.id}, buildFullWeatherInfo);
       var cityTemp = $("<span></span>")
                       .addClass('badge')
-                      .text(formatTemperature(city.main.temp) + '°C');
+                      .text(normalizeTemperature(city.main.temp) + '°C');
       var h3 = $("<h3></h3>")
                 .append([cityNameLink, cityTemp]);
 
@@ -184,16 +184,16 @@
     for (var i = 0; i < 10; i++) {
       var dt = formatUTCTime(cityData.list[i].dt);
       date.push(dt.date);
-      temperatureData.push(formatTemperature(cityData.list[i].main.temp));
+      temperatureData.push(normalizeTemperature(cityData.list[i].main.temp));
       temperatureHours.push(dt.time);
     }
 
     var canvas = $('<canvas></canvas>')
-                .attr({
-                  'id': '24hChart',
-                  'width': 400,
-                  'height': 150,
-                });
+                  .attr({
+                    'id': '24hChart',
+                    'width': 400,
+                    'height': 150,
+                  });
       
     var myChart = new Chart(canvas, {
       type: 'line',
@@ -214,7 +214,14 @@
             label: function(tooltipsItem, data) {
               return data.datasets[0].label + ': ' 
                       + data.datasets[0].data[tooltipsItem.index] + '°C';
-            }
+            },
+            afterLabel: function(tooltipsItem, data) {
+              var firstLetter = cityData.list[tooltipsItem.index].weather[0]
+                                .description[0].toUpperCase();
+              var description = cityData.list[tooltipsItem.index].weather[0]
+                                .description.slice(1);
+              return firstLetter + description;
+            },
           }
         },
         scales: {
@@ -251,40 +258,35 @@
       min: [],
     };
     var canvas = $('<canvas></canvas>')
-            .attr({
-              'id': '5dChart',
-              'width': 400,
-              'height': 150,
-            });
-    
+                  .attr({
+                    'id': '5dChart',
+                    'width': 400,
+                    'height': 150,
+                  });
     var date = [];
-    var dt = formatUTCTime(cityData.list[0].dt);
+    var dt = formatUTCTime(normalizeTemperature(cityData.list[0].dt));
     var currentDate = dt.date;
     date.push(dt.date);
     for (var i = 0; i < cityData.list.length; i++) {
       dt = formatUTCTime(cityData.list[i].dt);
-      temp.push(cityData.list[i].main.temp);
+      
       if (currentDate != dt.date) {
         currentDate = dt.date;
-        date.push(dt.date)
-
+        date.push(dt.date);
         var maxTemp = Math.max.apply(null, temp);
         var minTemp = Math.min.apply(null, temp);
         
-        temperatureData.max.push(formatTemperature(maxTemp));
-        temperatureData.min.push(formatTemperature(minTemp));
-        
+        temperatureData.max.push(normalizeTemperature(maxTemp));
+        temperatureData.min.push(normalizeTemperature(minTemp));
         temp = [];
       }
+      temp.push(normalizeTemperature(cityData.list[i].main.temp));
 
       if (i == cityData.list.length-1 && dt.time != '00:00') {
         var maxTemp = Math.max.apply(null, temp);
         var minTemp = Math.min.apply(null, temp);
-        console.log(maxTemp, minTemp);
-        temperatureData.max.push(formatTemperature(maxTemp));
-        temperatureData.min.push(formatTemperature(minTemp));
-        Window.temp = temp;
-        console.log(temp);
+        temperatureData.max.push(normalizeTemperature(maxTemp));
+        temperatureData.min.push(normalizeTemperature(minTemp));
         temp = [];     
       }
     }
@@ -348,11 +350,11 @@
     var table = $('<table></table>')
                   .addClass('table table-hover hourly');
     var tbody = $('<tbody></tbody>');
-
     var dt = formatUTCTime(cityData.list[0].dt);
     var currentDate = dt.date;
     var dataHeaderRow = createTableDataHeaderRow(currentDate);
     var dataRow = createTableDataRow(dt.time, cityData.list[0]);
+
     tbody.append(dataHeaderRow);
     tbody.append(dataRow);
     for (var i = 1; i < cityData.list.length; i++) {
@@ -365,10 +367,8 @@
       }
 
       dataRow = createTableDataRow(dt.time, cityData.list[i])
-
       tbody.append(dataRow);
     }
-
     table.append(tbody);
 
     return table;
@@ -379,15 +379,18 @@
       var tr = $('<tr></tr>')
                 .addClass('no-hover')
                 .append(th);
+                
       return tr;
     }
 
     function createTableDataRow(time, hour) {
+    var img = $('<img src="http://openweathermap.org/img/w/' + hour.weather[0].icon + '.png"/>');
     var th = $('<th></th>')
                 .addClass('hourly-time')
-                .text(time);
+                .text(time)
+                .append(img);
     var div1 = $('<div></div>')
-                .append('<div class="badge">' + hour.main.temp +'°C </div> ')
+                .append('<div class="badge">' + normalizeTemperature(hour.main.temp) +'°C </div> ')
                 .append(hour.weather[0].description);
     var div2 = $('<div></div>')
                 .text(hour.wind.speed + 'м/с, облачность: ' + hour.clouds.all + '%, ' 
@@ -403,7 +406,6 @@
   function getCityWeather(event) {
     var url = 'https://api.openweathermap.org/data/2.5/weather?id='
               + event.data.id + '&units=metric&lang=ru&APPID=8341812113eb234cc63caae1a067b88c';
-    
     var weatherLoader = new Loader('.weather');
     weatherLoader.start(); 
 
@@ -430,16 +432,17 @@
     var panelHeading = $('<div></div>')
                       .addClass('panel-heading')
                       .append(h4);
-    var p_temp = $('<p></p>')
+    var img = $('<img src="http://openweathermap.org/img/w/' + cityData.weather[0].icon + '.png"/>');
+    var p_temp = $('<span></span>')
                   .addClass('temp')
-                  .text(formatTemperature(cityData.main.temp) + '°C, '
+                  .text(normalizeTemperature(cityData.main.temp) + '°C, '
                           + cityData.weather[0].description);
     var p_data = $('<p></p>')
                   .addClass('date')
                   .text(formatUTCTime(cityData.dt).date);
     var panelBody = $('<div></div>')
                       .addClass('panel-body')
-                      .append([p_temp, p_data]);
+                      .append([img,p_temp, p_data]);
     var panel = $('<div></div>')
                   .addClass('panel panel-default')
                   .append([panelHeading, panelBody, weatherTable]);
@@ -475,6 +478,7 @@
       }
         table.find('tbody').append(clone_tr);                
     }
+    
     return table;
   }
 
@@ -508,7 +512,7 @@
     };
   }
 
-  function formatTemperature(temp) {
-    return temp.toString().split('.')[0];
+  function normalizeTemperature(temp) {
+    return Math.round(temp).toString();
   }
 })();
