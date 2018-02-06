@@ -1,0 +1,17 @@
+{
+  "name": "my_weather",
+  "version": "1.0.0",
+  "description": "Weather checker application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "weather"
+  ],
+  "author": "Aleksandr Ghavrilov",
+  "license": "ISC",
+  "dependencies": {
+    "chart.js": "^2.7.0"
+  }
+}

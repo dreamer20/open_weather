@@ -13,15 +13,19 @@
     var searchString = $('#inputSearch').val();
     var url = 'https://api.openweathermap.org/data/2.5/find?q=' 
               + encodeURIComponent(searchString) 
-              + '&units=metric&lang=ru&APPID=8341812113eb234cc63caae1a067b88c';
+              + '&units=metric&APPID=8341812113eb234cc63caae1a067b88c';
 
     resultsLoader.start();
 
     $.get( url, function(data) {
-      createCityList(data.list); 
+      if (data.count == 0) {
+        showAlertMessage('City is not found.');
+      } else {
+        createCityList(data.list); 
+      }
     })
     .fail(function() {
-      showAlertMessage('Похоже произошла какая-то ошибка. Попробуйте повторить поиск.')
+      showAlertMessage('Something went wrong. Try repeat search request.')
     })
     .always(function() {
       resultsLoader.stop();
@@ -73,9 +77,9 @@
                 .append([cityNameLink, cityTemp]);
 
       var description = $("<p></p>")
-                          .text('Температура от ' + city.main.temp_min + ' до ' 
-                            + city.main.temp_max + '°C, скорость ветра ' + city.wind.speed
-                            + 'м/с, облачность ' + city.clouds.all + '%, '
+                          .text('Temperature from ' + city.main.temp_min + ' to ' 
+                            + city.main.temp_max + '°C, speed of wind ' + city.wind.speed
+                            + 'm/s, cloudiness ' + city.clouds.all + '%, '
                             + city.weather[0].description + '.');
       var cityCoordLink = $("<a></a>")
                             .attr({
@@ -110,13 +114,13 @@
 
   function getCityForecast(event) {
     var url = 'https://api.openweathermap.org/data/2.5/forecast?id='
-              + event.data.id + '&units=metric&lang=ru&APPID=8341812113eb234cc63caae1a067b88c';
+              + event.data.id + '&units=metric&APPID=8341812113eb234cc63caae1a067b88c';
 
     var forecastLoader = new Loader('.forecast');
     forecastLoader.start();
     $.get(url, buildCityForecast)
     .fail(function() {
-      showAlertMessage('Запрос не удался.');
+      showAlertMessage('Request failed.');
     })
     .always(function() {
      forecastLoader.stop()
@@ -137,9 +141,9 @@
   function createTabs() {
 
     var tabsList = {
-      '24hours': 'За 24 часа',
-      '5days': 'Пятидневный прогноз',
-      'hourly': 'Почасовой прогноз',
+      '24hours': '24 hours',
+      '5days': '5 days',
+      'hourly': 'hourly',
     };
 
     var ul = $('<ul></ul>')
@@ -200,7 +204,7 @@
       data: {
         labels: temperatureHours,
         datasets: [{
-          label: 'Температура',
+          label: 'Temperature',
           data: temperatureData,
           fill: false,
         }]
@@ -229,13 +233,13 @@
             display: true,
             scaleLabel: {
               display: true,
-              labelString: 'Время'
+              labelString: 'time'
             },
           }],        
           yAxes: [{
             scaleLabel: {
               display: true,
-              labelString: 'Темература °C'
+              labelString: 'Temperature °C'
             },
             ticks: {
               beginAtZero: true,
@@ -296,13 +300,13 @@
       data: {
         labels: date,
         datasets: [{
-          label: 'Максимальная температура (День)',
+          label: 'Max temperature (day)',
           data: temperatureData.max,
           fill: 1,
           backgroundColor: 'rgb(81, 113, 145, 0.5)',
           borderColor: 'rgb(81, 113, 145, 0.5)',
         },{
-          label: 'Минимальная температура (Ночь)',
+          label: 'Min temperature (Night)',
           data: temperatureData.min,
           fill: false,
         }]
@@ -324,13 +328,13 @@
             display: true,
             scaleLabel: {
               display: true,
-              labelString: 'Время'
+              labelString: 'Time'
             },
           }],        
           yAxes: [{
             scaleLabel: {
               display: true,
-              labelString: 'Темература °C'
+              labelString: 'Temperature °C'
             },
             ticks: {
               beginAtZero: true,
@@ -393,8 +397,8 @@
                 .append('<div class="badge">' + normalizeTemperature(hour.main.temp) +'°C </div> ')
                 .append(hour.weather[0].description);
     var div2 = $('<div></div>')
-                .text(hour.wind.speed + 'м/с, облачность: ' + hour.clouds.all + '%, ' 
-                  + 'влажность: ' + hour.main.humidity + '%');
+                .text(hour.wind.speed + 'm/s, cloudiness: ' + hour.clouds.all + '%, ' 
+                  + 'Humidity: ' + hour.main.humidity + '%');
     var td = $('<td></td>')
               .append([div1, div2]);
     var tr = $('<tr></tr>').append([th, td]);
@@ -405,7 +409,7 @@
 
   function getCityWeather(event) {
     var url = 'https://api.openweathermap.org/data/2.5/weather?id='
-              + event.data.id + '&units=metric&lang=ru&APPID=8341812113eb234cc63caae1a067b88c';
+              + event.data.id + '&units=metric&APPID=8341812113eb234cc63caae1a067b88c';
     var weatherLoader = new Loader('.weather');
     weatherLoader.start(); 
 
@@ -414,7 +418,7 @@
       $('.weather').append(weatherPanel);
     })
     .fail(function() {
-      showAlertMessage('Запрос не удался.');
+      showAlertMessage('Request failed.');
     })
     .always(function() {
       weatherLoader.stop();
@@ -426,7 +430,7 @@
     var weatherTable = createWeatherTable(cityData);
     var h4 = $('<h4></h4>')
               .append('<strong></strong>')
-              .find('strong').text('Погода в городе ' + cityData.name + ', '
+              .find('strong').text('Weather in ' + cityData.name + ', '
                                    + cityData.sys.country)
               .end();
     var panelHeading = $('<div></div>')
@@ -452,13 +456,13 @@
 
   function createWeatherTable(cityData) {
     var infoTable = {
-      'Скорость ветра': cityData.wind.speed + ' м/с',
-      'Облачность': cityData.clouds.all + ' %',
-      'Давление': cityData.main.pressure + ' Па',
-      'Влажность': cityData.main.humidity + ' %',
-      'Восход': formatUTCTime(cityData.sys.sunrise).time,
-      'Закат': formatUTCTime(cityData.sys.sunset).time,
-      'Координаты': cityData.coord.lat + ' : ' + cityData.coord.lon,
+      'Wind': cityData.wind.speed + ' m/s',
+      'Cloudiness': cityData.clouds.all + ' %',
+      'Pressure': cityData.main.pressure + ' hpa',
+      'Humidity': cityData.main.humidity + ' %',
+      'Sunrise': formatUTCTime(cityData.sys.sunrise).time,
+      'Sunset': formatUTCTime(cityData.sys.sunset).time,
+      'Geo coords': cityData.coord.lat + ' : ' + cityData.coord.lon,
     };
     var tr = $('<tr></tr>').append('<th></th><td></td>');
     var table = $('<table></table>')
@@ -466,7 +470,7 @@
                   .append('<tbody></tbody>');
     for (var key in infoTable) {
         var clone_tr = tr.clone();
-      if (key == 'Координаты') {
+      if (key == 'Geo coords') {
         var link = $('<a></a>').attr({
           href: 'https://www.openstreetmap.org/#map=10/'
                 + cityData.coord.lat + '/' + cityData.coord.lon,
