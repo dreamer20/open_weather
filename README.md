@@ -1,4 +1,4 @@
-# My weather
+# Open weather
 
 Service based on [openweathermap.org](https://openweathermap.org) [API](https://openweathermap.org/api) that gets weather forecast in the city and current temperature situation.
 
